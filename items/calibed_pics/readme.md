@@ -13,7 +13,7 @@ so every time you run the script, it will ask you whether you would like to
 restart your calibrated picture collection as much as possible. and you make 
 your choice.<br/>
 then you could start your collection.
-** Please notice your camera's index parameterin the function cv2.VideoCapture. **
+**Please notice your camera's index parameterin the function cv2.VideoCapture.**
 and i think the camera as our eyes to see the
 world. the left and right side of the camera are told by the means.<br/>
 during your collection, when you get a good position for the camera and picture, 
