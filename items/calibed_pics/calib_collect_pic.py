@@ -46,7 +46,7 @@ def calib_collect_main():
             config_dict['last_dir'] = last_dir
             with open(conf_file, 'w') as f:
                 json.dump(config_dict, f)
-            with open(count_fiile, 'w') as f:
+            with open(count_file, 'w') as f:
                 f.write(str(0))
     if not os.path.exists(last_dir):
         os.mkdir(last_dir)
@@ -97,7 +97,7 @@ def prepro_for_matlab(width):
 
 if __name__ == '__main__':
     while True:
-        choice = int(input('请选择：1.标定    2.处理成matlab能使用的标定图片格式'))
+        choice = int(input('请选择：1.标定图片采集    2.处理成matlab能使用的标定图片格式'))
         if choice == 1:
             calib_collect_main()
             break
