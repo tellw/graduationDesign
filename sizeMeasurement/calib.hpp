@@ -25,7 +25,7 @@ struct stereo_calibrator {
 	private:
     static const uint32_t min_good_images = 1;
     static const cv::Size2i subpix_window_size;
-    bool _calibrate(const std::vector<cv::Mat>& lefts, const std::vector<cv::Mat>& rights), cv::Size2i image_size, cv::Size2i pattern, cv::Size2f grid_size, cv::Size2i win_size);
+    bool _calibrate(const std::vector<cv::Mat>& lefts, const std::vector<cv::Mat>& rights, cv::Size2i image_size, cv::Size2i pattern, cv::Size2f grid_size, cv::Size2i win_size);
     static cv::Size2i _size(const cv::Mat& img){
 	    return cv::Size2i(img.cols, img.rows);
     }

@@ -113,7 +113,7 @@ bool stereo_calibrator::_calibrate(const std::vector<cv::Mat>& lefts, const std:
 		++count_good;
 	}
 	if(count_good < min_good_images) return false;
-	const auto corner_positions = _cal_corner_positions(pattern, gird_size);
+	const auto corner_positions = _cal_corner_positions(pattern, grid_size);
 	std::vector<std::vector<cv::Point3f>> corner_positions_vec(count_good, corner_positions);
 	std::vector<cv::Mat> rvecs, tvecs;
 	std::cout << "Left calibration error: " << cv::calibrateCamera(corner_positions_vec, left_corners, image_size, left_intrinsic, left_coeffs, rvecs, tvecs) << std::endl;
@@ -135,8 +135,16 @@ static std::vector<cv::Point3f> _cal_corner_positions(cv::Size2i pattern, cv::Si
 	return result;
 }
 
-bool stereo_calibrator::matlab_calibrate(const std::string& conf_file, cv::Size2i image_size){
+bool stereo_calibrator::matlab_calibrate(const std::string& conf_file){
 	if(!load_params_matlab(conf_file))return false;
+	int img_width, img_height;
+	std::cout << "标定时设置的单张图片的宽度：";
+	std::cin >> img_width;
+	std::cout << std::endl;
+	std::cout << "标定时设置的单张图片的高度：";
+	std::cin >> img_height;
+	std::cout << std::endl;
+	cv::Size2i image_size(img_width, img_height);
 	cv::stereoRectify(left_intrinsic, left_coeffs, right_intrinsic, right_coeffs, image_size, rotation, transform, r1, r2, p1, p2, q);
 	return true;
 }

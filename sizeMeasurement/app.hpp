@@ -7,7 +7,7 @@
 void sample_plane_point_cloud(const cv::Mat& disp, const cv::Mat& q, cloud_ptr& cloud, std::vector<cv::Vec3f>& set);
 cv::Vec3f estimate_reference_plane(const std::vector<cv::Vec3f>& set);
 bool reference_plane_bounding_box(const cv::Mat& source, cv::Rect2i& bbox, std::vector<cv::Point2i>& poly);
-void _find_polys(const cv::Mat& image, std::vector<std::vector<cv::Point2i>>& polys);
+void _find_polys(const cv::Mat& image, std::vector<std::vector<cv::Point2i>>& polys, bool bVisualized, int gaussianBlurKSize = 3, int cannyLowThresh = 55, int cannyHighThresh = 110, double minAreaCoeff = 0.02, double approxPolyDPCoeff = 0.05);
 void find_polys(const cv::Mat& image, std::vector<std::vector<cv::Point2i>>& polys);
 
 #endif // APP_HPP_INCLUDED

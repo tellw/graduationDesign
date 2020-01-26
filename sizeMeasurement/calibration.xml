@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--<opencv_storage>
+<image_size>
+  640 480</image_size>
+<pattern>
+  4 6</pattern>
+<grid_size>
+  3.9700001478195190e-02 3.9900001138448715e-02</grid_size>
+<path>gened_calib_pics/0.jpg;gened_calib_pics/1.jpg;gened_calib_pics/2.jpg;gened_calib_pics/3.jpg;gened_calib_pics/4.jpg;gened_calib_pics/5.jpg;gened_calib_pics/6.jpg;gened_calib_pics/7.jpg;gened_calib_pics/8.jpg;gened_calib_pics/9.jpg;gened_calib_pics/10.jpg;gened_calib_pics/11.jpg;gened_calib_pics/12.jpg;gened_calib_pics/13.jpg;gened_calib_pics/14.jpg;gened_calib_pics/15.jpg;gened_calib_pics/16.jpg;gened_calib_pics/17.jpg;gened_calib_pics/18.jpg;gened_calib_pics/19.jpg;gened_calib_pics/20.jpg;gened_calib_pics/21.jpg;gened_calib_pics/22.jpg;gened_calib_pics/23.jpg;gened_calib_pics/24.jpg;gened_calib_pics/25.jpg;gened_calib_pics/26.jpg;gened_calib_pics/27.jpg;gened_calib_pics/28.jpg;gened_calib_pics/29.jpg;gened_calib_pics/30.jpg;gened_calib_pics/31.jpg;gened_calib_pics/32.jpg;gened_calib_pics/33.jpg;gened_calib_pics/34.jpg;gened_calib_pics/35.jpg;</path>
+</opencv_storage>-->
+<opencv_storage>
+<image_size>
+  640 480</image_size>
+<pattern>
+  9 6</pattern>
+<grid_size>
+  2.744e-02 2.744e-02</grid_size>
+<path>C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/0.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/1.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/11.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/12.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/13.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/14.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/15.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/16.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/17.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/18.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/19.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/2.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/3.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/4.jpg;C:/Users/tellw/Desktop/bishe/items/calibed_pics/20191204171823cleandirection/5.jpg;</path>
+</opencv_storage>
