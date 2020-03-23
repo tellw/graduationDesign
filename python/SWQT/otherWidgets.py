@@ -71,11 +71,16 @@ class SWQTDocker(QWidget):
         someProcessLayout.addWidget(self.OTSUCheckBox, 2, 1)
         someProcessLayout.addWidget(self.RCFContourDetectCheckBox, 3, 0)
 
+        drawWayButtonGroup = QButtonGroup(self)
         drawRadiosLayout = QGridLayout()
         self.rectRadioButton = QRadioButton('Rect')
         self.circleRadioButton = QRadioButton('Circle')
         self.polyRadioButton = QRadioButton('Poly')
         self.eraserRadioButton = QRadioButton('Eraser')
+        drawWayButtonGroup.addButton(self.rectRadioButton)
+        drawWayButtonGroup.addButton(self.circleRadioButton)
+        drawWayButtonGroup.addButton(self.polyRadioButton)
+        drawWayButtonGroup.addButton(self.eraserRadioButton)
         drawWay = cfg.get('draw', 'drawWay')
         if drawWay == 'Rect':
             self.rectRadioButton.setChecked(True)
@@ -98,10 +103,14 @@ class SWQTDocker(QWidget):
         selectionStatusLayout.addWidget(self.bScaleCheckBox)
         selectionStatusLayout.addWidget(self.bDrawCheckBox)
 
+        captureWayButtonGroup = QButtonGroup(self)
         getRadiosLayout = QGridLayout()
         self.picRadioButton = QRadioButton('Pic')
         self.captureSelectedPicRadioButton = QRadioButton('CaptureSelectedPic')
         self.captureRadioButton = QRadioButton('Capture')
+        captureWayButtonGroup.addButton(self.picRadioButton)
+        captureWayButtonGroup.addButton(self.captureSelectedPicRadioButton)
+        captureWayButtonGroup.addButton(self.captureRadioButton)
         captureWay = cfg.get('binocular_cameras', 'captureWay')
         if captureWay == 'Pic':
             self.picRadioButton.setChecked(True)
@@ -152,7 +161,7 @@ class SWQTDocker(QWidget):
         self.bCollectedCheckBox.stateChanged.connect(lambda:self.bCheckBoxStateChanged(self.bCollectedCheckBox))
         self.bTimeRecordedCheckBox.stateChanged.connect(lambda:self.bCheckBoxStateChanged(self.bTimeRecordedCheckBox))
         self.bmmCheckBox.stateChanged.connect(lambda:self.bCheckBoxStateChanged(self.bmmCheckBox))
-        self.bAutoCheckBox.stateChanged.connect(lambda:self.bCheckBoxStateChanged(self.bAtuoCheckBox))
+        self.bAutoCheckBox.stateChanged.connect(lambda:self.bCheckBoxStateChanged(self.bAutoCheckBox))
         processThinglabel = QLabel('Process thing: ')
         disparityStyleLabel = QLabel('Disparity style: ')
         constructionStyleLabel = QLabel('Construction style: ')
@@ -373,3 +382,11 @@ class SettingsDialog(QDialog):
         self.cfg.set('binocular_cameras', 'rightCameraId', self.rightCameraIdLE.text())
         self.cfg.write(open('SWQT.ini', 'w'))
         self.close()
+
+class ResultShowWidget(QWidget):
+    def __init__(self , parent=None):
+        super(ResultShowWidget, self).__init__(parent)
+        self.initUI()
+
+    def initUI(self):
+        pass

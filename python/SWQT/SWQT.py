@@ -96,8 +96,8 @@ class SWQT(QMainWindow):
     def openAPic(self):
         self.setBScale(False)
         self.setBDraw(False)
-        pic_file = QFileDialog.getOpenFileName(self, 'open a picture', self.cfg.get('file', 'lastOpenDir'), 'All files(*.*);;Image files(*.bmp *.jpg *.pbm *.png *.ppm *.xbm *.xpm)')
-        if pic_file != '':
+        pic_file, _ = QFileDialog.getOpenFileName(self, 'open a picture', self.cfg.get('file', 'lastOpenDir') if os.path.exists(self.cfg.get('file', 'lastOpenDir')) else '.', 'All files(*.*);;Image files(*.bmp *.jpg *.pbm *.png *.ppm *.xbm *.xpm)')
+        if os.path.isfile(pic_file):
             self.cfg.set('file', 'lastOpenDir', os.path.dirname(pic_file))
             with open('SWQT.ini', 'w') as configfile:
                 self.cfg.write(configfile)
@@ -214,6 +214,7 @@ class SWQT(QMainWindow):
                 cap = cv2.VideoCapture(i)
                 _, then_cap = cap.read()
                 cap.release()
+                cv2.destroyAllWindows()
                 capLabel.setPixmap(QPixmap.fromImage(npndarray2qimage(then_cap)))
                 camerasSelectDialogLayout.addWidget(capLabel, 0, i+1)
                 indexStr = 'Index: %d'%i
@@ -239,6 +240,7 @@ class SWQT(QMainWindow):
                     self.left_cap.release()
                 if self.rightCameraId > -1:
                     self.right_cap.release()
+                cv2.destroyAllWindows()
                 self.leftCameraId = leftCameraButtonGroup.checkedId()
                 self.rightCameraId = rightCameraButtonGroup.checkedId()
                 self.cfg.set('binocular_cameras', 'leftCameraId', str(self.leftCameraId))
@@ -251,8 +253,8 @@ class SWQT(QMainWindow):
     def openRightPic(self):
         self.setBScale(False)
         self.setBDraw(False)
-        picFile = QFileDialog.getOpenFileName(self, 'open a right picture', self.cfg.get('file', 'lastOpenRightDir'), 'All files(*.*);;Image files(*.bmp *.jpg *.pbm *.png *.ppm *.xbm *.xpm)')
-        if picFile != '':
+        picFile, _ = QFileDialog.getOpenFileName(self, 'open a right picture', self.cfg.get('file', 'lastOpenRightDir') if os.path.exists(self.cfg.get('file', 'lastOpenRightDir')) else '.', 'All files(*.*);;Image files(*.bmp *.jpg *.pbm *.png *.ppm *.xbm *.xpm)')
+        if os.path.isfile(picFile):
             self.cfg.set('file', 'lastOpenRightDir', os.path.dirname(picFile))
             with open('SWQT.ini', 'w') as configfile:
                 self.cfg.write(configfile)
@@ -284,7 +286,9 @@ class SWQT(QMainWindow):
                     right = self.someProcessDetailed(right_frame)
                     self.canvas.load_image(npndarray2qimage(left))
                     cv2.imshow('right pic', right_frame)
-                    ret = self.volumeMeasure.detect(left, right, left_frame, right_frame)
+                    if not self.volumeMeasure.bAuto:
+                        cv2.waitKey()
+                    ret = self.volumeMeasure.detect(left, right, left_frame, right_frame, self.canvas.shapes)
                     if ret == 1:
                         messageBox_info('please binarify the image(eg. gray, canny or thresh)', self)
                 else:
@@ -307,6 +311,9 @@ class SWQT(QMainWindow):
                     right = self.someProcessDetailed(right_frame)
                     self.canvas.load_image(npndarray2qimage(left))
                     cv2.imshow('right pic', right_frame)
+                    if not self.volumeMeasure.bAuto:
+                        cv2.waitKey()
+                    ret = self.volumeMeasure.detect(left, right, left_frame, right_frame, self.canvas.shapes)
                     ret = self.volumeMeasure.detect(left, right, left_frame, right_frame)
                     if ret == 1:
                         messageBox_info('please binarify the image(eg.gray, canny or thresh)', self)
@@ -377,8 +384,9 @@ class SWQT(QMainWindow):
             cv2.destroyAllWindows()
 
     def closeEvent(self, *args, **kwargs):
-        if self.leftCameraId > -1 or self.rightCameraId > -1:
+        if self.leftCameraId > -1:
             self.left_cap.release()
+        if self.rightCameraId > -1:
             self.right_cap.release()
         cv2.destroyAllWindows()
         if self.dockWidget.grayCheckBox.isChecked():
@@ -456,6 +464,7 @@ class SWQT(QMainWindow):
         self.cfg.set('binocular_cameras', 'disparityStyle', self.dockWidget.disparityStyleComboBox.currentText())
         self.cfg.set('binocular_cameras', 'constructionStyle', self.dockWidget.constructionStyleComboBox.currentText())
         self.cfg.set('binocular_cameras', 'sizeCalculation', self.dockWidget.sizeCalculationComboBox.currentText())
+        self.cfg.write(open('SWQT.ini', 'w'))
 
 if __name__ == '__main__':
     app = QApplication([])

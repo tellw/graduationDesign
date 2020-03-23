@@ -35,7 +35,7 @@ class stereo_calibrator:
         self.left_intrinsic = infile.getNode('left_intrinsic').mat()
         self.left_coeffs = infile.getNode('left_coeffs').mat()
         self.right_intrinsic = infile.getNode('right_intrinsic').mat()
-        self.right_coeffs = infile.getNode('right_coeffs')
+        self.right_coeffs = infile.getNode('right_coeffs').mat()
         self.rotation = infile.getNode('rotation').mat()
         self.transform = infile.getNode('transform').mat()
         self.r1 = infile.getNode('r1').mat()
@@ -115,15 +115,19 @@ class stereo_calibrator:
         storage.release()
         return True
 
-    def rectify_left(self, left_img, new_size):
+    def rectify_left(self, left_img):
+        new_size = (left_img.shape[1], left_img.shape[0])
         mapx, mapy = cv2.initUndistortRectifyMap(self.left_intrinsic, self.left_coeffs, self.r1, self.p1, new_size, cv2.CV_8U)
         rectified = cv2.remap(left_img, mapx, mapy, cv2.INTER_LINEAR)
         return rectified
 
-    def rectify_right(self, right_img, new_size):
+    def rectify_right(self, right_img):
+        new_size = (right_img.shape[1], right_img.shape[0])
         mapx, mapy = cv2.initUndistortRectifyMap(self.right_intrinsic, self.right_coeffs, self.r2, self.p2, new_size, cv2.CV_8U)
         rectified = cv2.remap(right_img, mapx, mapy, cv2.INTER_LINEAR)
         return rectified
+
+
 
     def save_params(self, xmlfile):
         storage = cv2.FileStorage(xmlfile, cv2.FILE_STORAGE_WRITE+cv2.FILE_STORAGE_FORMAT_XML)
@@ -173,7 +177,7 @@ class VolumeMeasure:
         self.bShowed = self.bVisualized and not self.bTimeRecorded
         self.cut_rate = self.cfg.getfloat('binocular_cameras', 'cut_rate')
 
-    def detect(self, left, right, left_src, right_src):
+    def detect(self, left, right, left_src, right_src, target_area):
         if self.bCollected:
             cv2.imwrite('collect/left/%d.jpg'%self.detectCount, left_src)
             cv2.imwrite('collect/right/%d.jpg'%self.detectCount, right_src)
@@ -187,10 +191,10 @@ class VolumeMeasure:
             cv2.imshow('rectified_l', rectified_left)
             cv2.imshow('rectified_r', rectified_right_src)
             cv2.waitKey()
-        left_roi = rectified_left[self.cut_rate*self.picHeight:(1-self.cut_rate)*self.picHeight, self.cut_rate*self.picWidth:(1-self.cut_rate)*self.picWidth]
-        right_roi = rectified_right[self.cut_rate*self.picHeight:(1-self.cut_rate)*self.picHeight, self.cut_rate*self.picWidth:(1-self.cut_rate)*self.picWidth]
-        left_src_roi = rectified_left_src[self.cut_rate*self.picHeight:(1-self.cut_rate)*self.picHeight, self.cut_rate*self.picWidth:(1-self.cut_rate)*self.picWidth]
-        right_src_roi = rectified_right_src[self.cut_rate*self.picHeight:(1-self.cut_rate)*self.picHeight, self.cut_rate*self.picWidth:(1-self.cut_rate)*self.picWidth]
+        left_roi = rectified_left[int(self.cut_rate*self.picHeight):int((1-self.cut_rate)*self.picHeight), int(self.cut_rate*self.picWidth):int((1-self.cut_rate)*self.picWidth)]
+        right_roi = rectified_right[int(self.cut_rate*self.picHeight):int((1-self.cut_rate)*self.picHeight), int(self.cut_rate*self.picWidth):int((1-self.cut_rate)*self.picWidth)]
+        left_src_roi = rectified_left_src[int(self.cut_rate*self.picHeight):int((1-self.cut_rate)*self.picHeight), int(self.cut_rate*self.picWidth):int((1-self.cut_rate)*self.picWidth)]
+        right_src_roi = rectified_right_src[int(self.cut_rate*self.picHeight):int((1-self.cut_rate)*self.picHeight), int(self.cut_rate*self.picWidth):int((1-self.cut_rate)*self.picWidth)]
         if self.bShowed:
             cv2.imshow('rectified_l', left_roi)
             cv2.imshow('rectified_r', right_src_roi)
@@ -211,38 +215,38 @@ class VolumeMeasure:
             resShow = rectified_left_src.copy()
         if self.sizeCalculation == 'Rect calculation':
             for poly in polys:
-                pt0 = cloud[poly[0][0]][poly[0][1]]
-                pt1 = cloud[poly[1][0]][poly[1][1]]
-                pt2 = cloud[poly[2][0]][poly[2][1]]
-                pt3 = cloud[poly[3][0]][poly[3][1]]
+                pt0 = cloud[poly[0][0][1]][poly[0][0][0]]
+                pt1 = cloud[poly[1][0][1]][poly[1][0][0]]
+                pt2 = cloud[poly[2][0][1]][poly[2][0][0]]
+                pt3 = cloud[poly[3][0][1]][poly[3][0][0]]
                 if self.bShowed:
-                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[0][0], poly[0][1], pt0[0], pt0[1], pt0[2]))
-                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[1][0], poly[1][1], pt1[0], pt1[1], pt1[2]))
-                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[2][0], poly[2][1], pt2[0], pt2[1], pt2[2]))
-                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[3][0], poly[3][1], pt3[0], pt3[1], pt3[2]))
+                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[0][0][0], poly[0][0][1], pt0[0], pt0[1], pt0[2]))
+                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[1][0][0], poly[1][0][1], pt1[0], pt1[1], pt1[2]))
+                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[2][0][0], poly[2][0][1], pt2[0], pt2[1], pt2[2]))
+                    print('(%d, %d)\'s world coordinate is (%d, %d, %d)'%(poly[3][0][0], poly[3][0][1], pt3[0], pt3[1], pt3[2]))
                 a = (_distance(pt0, pt1)+_distance(pt2, pt3))/2
                 b = (_distance(pt0, pt3)+_distance(pt1, pt2))/2
-                c = self.camera_height-min([pt0[2], pt1[0], pt2[0], pt3[0], self.camera_height])
+                c = self.camera_height-min([pt0[2], pt1[2], pt2[2], pt3[2], self.camera_height])
                 if not self.bmm:
                     a*=1000
                     b*=1000
                     c*=1000
-                astr = '%.3fcm'%a/10
-                bstr = '%.3fcm'%b/10
-                cstr = '%.3fcm'%c/10
-                vstr = '%.3fdm^3'%a*b*c/1000000
+                astr = '%.3fcm'%(a/10)
+                bstr = '%.3fcm'%(b/10)
+                cstr = '%.3fcm'%(c/10)
+                vstr = '%.3fdm^3'%(a*b*c/1000000)
                 if self.bTimeRecorded:
                     duration = time.time()-startTime
                     print('costs %ds, fps: %f'%(int(duration), 1/duration))
                 elif self.bShowed:
                     print('a: %s; b: %s; c: %s; v: %s'%(astr, bstr, cstr, vstr))
-                cv2.line(resShow, (poly[0][0]+int(self.picWidth*self.cut_rate), poly[0][1]+int(self.picHeight*self.cut_rate)), (poly[1][0]+int(self.picWidth*self.cut_rate), poly[1][1]+int(self.picHeight*self.cut_rate)), (0, 0, 255))
-                cv2.putText(resShow, astr, (int((poly[0][0]+poly[1][0])/2+self.picWidth*self.cut_rate), int((poly[0][1]+poly[1][1])/2+self.picHeight*self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 0))
-                cv2.line(resShow, (poly[2][0] + int(self.picWidth * self.cut_rate), poly[2][1] + int(self.picHeight * self.cut_rate)), (poly[1][0] + int(self.picWidth * self.cut_rate), poly[1][1] + int(self.picHeight * self.cut_rate)), (0, 0, 255))
-                cv2.putText(resShow, bstr, (int((poly[2][0] + poly[1][0]) / 2 + self.picWidth * self.cut_rate), int((poly[2][1] + poly[1][1]) / 2 + self.picHeight * self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 0))
-                cv2.putText(resShow, cstr, (int((poly[2][0] + poly[0][0]) / 2 + self.picWidth * self.cut_rate), int((poly[2][1] + poly[0][1]) / 2 + self.picHeight * self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0))
-                VStrPosX = poly[1][0]+int(self.picWidth*self.cut_rate) if poly[1][0]+int(self.picWidth*self.cut_rate) < self.picWidth-40 else self.picWidth-40
-                cv2.putText(resShow, vstr, (VStrPosX, poly[1][1]+int(self.picHeight*self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 255))
+                cv2.line(resShow, (poly[0][0][0]+int(self.picWidth*self.cut_rate), poly[0][0][1]+int(self.picHeight*self.cut_rate)), (poly[1][0][0]+int(self.picWidth*self.cut_rate), poly[1][0][1]+int(self.picHeight*self.cut_rate)), (0, 0, 255))
+                cv2.putText(resShow, astr, (int((poly[0][0][0]+poly[1][0][0])/2+self.picWidth*self.cut_rate), int((poly[0][0][1]+poly[1][0][1])/2+self.picHeight*self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 0))
+                cv2.line(resShow, (poly[2][0][0] + int(self.picWidth * self.cut_rate), poly[2][0][1] + int(self.picHeight * self.cut_rate)), (poly[1][0][0] + int(self.picWidth * self.cut_rate), poly[1][0][1] + int(self.picHeight * self.cut_rate)), (0, 0, 255))
+                cv2.putText(resShow, bstr, (int((poly[2][0][0] + poly[1][0][0]) / 2 + self.picWidth * self.cut_rate), int((poly[2][0][1] + poly[1][0][1]) / 2 + self.picHeight * self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 0))
+                cv2.putText(resShow, cstr, (int((poly[2][0][0] + poly[0][0][0]) / 2 + self.picWidth * self.cut_rate), int((poly[2][0][1] + poly[0][0][1]) / 2 + self.picHeight * self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0))
+                VStrPosX = poly[1][0][0]+int(self.picWidth*self.cut_rate) if poly[1][0][0]+int(self.picWidth*self.cut_rate) < self.picWidth-40 else self.picWidth-40
+                cv2.putText(resShow, vstr, (VStrPosX, poly[1][0][1]+int(self.picHeight*self.cut_rate)), cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 255))
                 rect = cv2.boundingRect(poly)
                 cv2.rectangle(resShow, (rect[0]+int(self.picWidth*self.cut_rate), rect[1]+int(self.picHeight*self.cut_rate)), (rect[0]+rect[2]+int(self.picWidth*self.cut_rate), rect[1]+rect[3]+int(self.picHeight*self.cut_rate)), (255, 0, 0))
         cv2.imshow('measure', resShow)
